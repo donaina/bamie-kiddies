@@ -19,7 +19,7 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
   let query = supabase
     .from('products')
     .select(`
-      id, name, slug, price, category, gender,
+      id, name, slug, price, discount_percent, category, gender,
       product_images(cloudinary_url, is_primary),
       product_variants(quantity)
     `)

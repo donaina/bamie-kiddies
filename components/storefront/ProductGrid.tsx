@@ -6,6 +6,7 @@ interface Product {
   name: string
   slug: string
   price: number
+  discount_percent?: number | null
   primaryImage: string | null
   totalStock: number
   category?: string | null

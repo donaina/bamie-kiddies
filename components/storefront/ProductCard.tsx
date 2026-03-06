@@ -7,13 +7,16 @@ interface ProductCardProps {
   name: string
   slug: string
   price: number
+  discount_percent?: number | null
   primaryImage: string | null
   totalStock: number
   category?: string | null
 }
 
-export default function ProductCard({ name, slug, price, primaryImage, totalStock, category }: ProductCardProps) {
+export default function ProductCard({ name, slug, price, discount_percent, primaryImage, totalStock, category }: ProductCardProps) {
   const soldOut = totalStock === 0
+  const hasDiscount = !!discount_percent && discount_percent > 0
+  const discountedPrice = hasDiscount ? price * (1 - discount_percent! / 100) : price
 
   return (
     <Link
@@ -52,6 +55,15 @@ export default function ProductCard({ name, slug, price, primaryImage, totalStoc
             </span>
           </div>
         )}
+
+        {/* Discount badge */}
+        {hasDiscount && !soldOut && (
+          <div className="absolute top-2 right-2">
+            <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+              -{discount_percent}%
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Info */}
@@ -59,7 +71,14 @@ export default function ProductCard({ name, slug, price, primaryImage, totalStoc
         <h3 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-2 group-hover:text-orange-600 transition-colors">
           {name}
         </h3>
-        <p className="mt-1 font-bold text-gray-900">{formatCurrency(price)}</p>
+        {hasDiscount ? (
+          <div className="mt-1 flex items-center gap-1.5">
+            <p className="font-bold text-gray-900">{formatCurrency(discountedPrice)}</p>
+            <p className="text-xs text-gray-400 line-through">{formatCurrency(price)}</p>
+          </div>
+        ) : (
+          <p className="mt-1 font-bold text-gray-900">{formatCurrency(price)}</p>
+        )}
       </div>
     </Link>
   )

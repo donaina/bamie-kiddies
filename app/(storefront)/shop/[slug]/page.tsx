@@ -22,7 +22,7 @@ export default async function ProductDetailPage({ params }: Props) {
   const { data: product } = await supabase
     .from('products')
     .select(`
-      id, name, slug, description, price, category, gender, age_group,
+      id, name, slug, description, price, discount_percent, category, gender, age_group,
       product_images(id, cloudinary_url, is_primary, display_order, alt_text),
       product_variants(id, size, quantity, is_active)
     `)
@@ -44,14 +44,15 @@ export default async function ProductDetailPage({ params }: Props) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <ProductDetailClient
         product={{
-          id:          product.id,
-          name:        product.name,
-          description: product.description,
-          price:       product.price,
-          slug:        product.slug,
-          category:    product.category,
-          gender:      product.gender,
-          age_group:   product.age_group,
+          id:               product.id,
+          name:             product.name,
+          description:      product.description,
+          price:            product.price,
+          discount_percent: product.discount_percent ?? null,
+          slug:             product.slug,
+          category:         product.category,
+          gender:           product.gender,
+          age_group:        product.age_group,
         }}
         images={images}
         variants={variants}

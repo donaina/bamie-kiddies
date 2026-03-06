@@ -14,6 +14,7 @@ export interface Database {
           description: string | null
           price: number
           cost_price: number | null
+          discount_percent: number
           category: string | null
           gender: 'boys' | 'girls' | 'unisex' | null
           age_group: string | null

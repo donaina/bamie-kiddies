@@ -42,6 +42,7 @@ interface ProductData {
   description: string | null
   price: number
   cost_price: number | null
+  discount_percent: number | null
   category: string | null
   gender: string | null
   age_group: string | null
@@ -56,9 +57,10 @@ const schema = z.object({
   name:        z.string().min(2, 'Name is required'),
   slug:        z.string().min(2, 'Slug is required').regex(/^[a-z0-9-]+$/, 'Lowercase letters, numbers, hyphens only'),
   description: z.string().optional(),
-  price:       z.number().min(1, 'Price must be at least ₦1'),
-  cost_price:  z.number().min(0).optional(),
-  category:    z.string().optional(),
+  price:            z.number().min(1, 'Price must be at least ₦1'),
+  cost_price:       z.number().min(0).optional(),
+  discount_percent: z.number().min(0).max(100).optional(),
+  category:         z.string().optional(),
   gender:      z.string().optional(),
   age_group:   z.string().optional(),
   is_active:   z.boolean(),
@@ -78,7 +80,8 @@ export default function ProductForm({ product }: { product?: ProductData }) {
       slug:        product?.slug ?? '',
       description: product?.description ?? '',
       price:       product?.price ?? 0,
-      cost_price:  product?.cost_price ?? undefined,
+      cost_price:       product?.cost_price ?? undefined,
+      discount_percent: product?.discount_percent ?? 0,
       category:    product?.category ?? '',
       gender:      product?.gender ?? '',
       age_group:   product?.age_group ?? '',
@@ -231,7 +234,7 @@ export default function ProductForm({ product }: { product?: ProductData }) {
           <Textarea id="description" {...register('description')} rows={3} placeholder="Describe the product…" />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="space-y-1">
             <Label htmlFor="price">Selling Price (₦) *</Label>
             <Input id="price" type="number" min="0" step="50" {...register('price', { valueAsNumber: true })} />
@@ -240,6 +243,17 @@ export default function ProductForm({ product }: { product?: ProductData }) {
           <div className="space-y-1">
             <Label htmlFor="cost_price">Cost Price (₦)</Label>
             <Input id="cost_price" type="number" min="0" step="50" {...register('cost_price', { valueAsNumber: true })} placeholder="For profit tracking" />
+          </div>
+          <div className="space-y-1">
+            <Label>Discount</Label>
+            <Select defaultValue={String(product?.discount_percent ?? 0)} onValueChange={(v) => setValue('discount_percent', Number(v))}>
+              <SelectTrigger><SelectValue placeholder="No discount" /></SelectTrigger>
+              <SelectContent>
+                {[0, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70].map((d) => (
+                  <SelectItem key={d} value={String(d)}>{d === 0 ? 'No discount' : `${d}% off`}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

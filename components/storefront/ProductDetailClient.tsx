@@ -14,6 +14,7 @@ import { formatCurrency } from '@/lib/utils/formatCurrency'
 interface Props {
   product: {
     id: string; name: string; description: string | null; price: number
+    discount_percent: number | null
     slug: string; category: string | null; gender: string | null; age_group: string | null
   }
   images: Array<{ id: string; cloudinary_url: string; is_primary: boolean; alt_text: string | null }>
@@ -32,6 +33,8 @@ export default function ProductDetailClient({ product, images, variants }: Props
 
   const selectedVariant = variants.find((v) => v.id === selectedVariantId)
   const primaryImage    = images.find((i) => i.is_primary) ?? images[0]
+  const hasDiscount     = !!product.discount_percent && product.discount_percent > 0
+  const discountedPrice = hasDiscount ? product.price * (1 - product.discount_percent! / 100) : product.price
 
   function handleAddToCart() {
     if (!selectedVariant) { toast.error('Please select a size'); return }
@@ -44,7 +47,7 @@ export default function ProductDetailClient({ product, images, variants }: Props
       productName: product.name,
       slug:        product.slug,
       size:        selectedVariant.size,
-      price:       product.price,
+      price:       discountedPrice,
       imageUrl:    primaryImage?.cloudinary_url ?? null,
       quantity:    qty,
       maxQuantity: selectedVariant.quantity,
@@ -110,9 +113,19 @@ export default function ProductDetailClient({ product, images, variants }: Props
               </span>
             )}
             <h1 className="text-3xl font-bold text-gray-900 mt-1">{product.name}</h1>
-            <p className="text-3xl font-bold mt-2" style={{ color: '#e45826' }}>
-              {formatCurrency(product.price)}
-            </p>
+            <div className="flex items-baseline gap-3 mt-2">
+              <p className="text-3xl font-bold" style={{ color: '#e45826' }}>
+                {formatCurrency(discountedPrice)}
+              </p>
+              {hasDiscount && (
+                <>
+                  <p className="text-xl text-gray-400 line-through">{formatCurrency(product.price)}</p>
+                  <span className="bg-red-100 text-red-600 text-sm font-bold px-2 py-0.5 rounded-full">
+                    -{product.discount_percent}% off
+                  </span>
+                </>
+              )}
+            </div>
           </div>
 
           {product.description && (
