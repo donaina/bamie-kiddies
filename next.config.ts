@@ -18,7 +18,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://res.cloudinary.com",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.paystack.co https://onesignal.com https://api.onesignal.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.paystack.co https://onesignal.com https://api.onesignal.com https://api.cloudinary.com",
       "frame-src https://checkout.paystack.com",
       "worker-src blob: 'self' https://cdn.onesignal.com",
     ].join('; '),

@@ -18,7 +18,7 @@ export default async function HomePage() {
   const { data: featuredRaw } = await supabase
     .from('products')
     .select(`
-      id, name, slug, price, category,
+      id, name, slug, price, discount_percent, category,
       product_images(cloudinary_url, is_primary),
       product_variants(quantity)
     `)

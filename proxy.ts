@@ -60,7 +60,7 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   // ── Protect /admin routes ─────────────────────────────────────
-  const isAdminRoute = pathname.startsWith('/admin') && pathname !== '/admin-login'
+  const isAdminRoute = pathname.startsWith('/admin') && pathname !== '/admin-login' && pathname !== '/admin-setup'
   if (isAdminRoute && !user) {
     const loginUrl = new URL('/admin-login', request.url)
     loginUrl.searchParams.set('redirectTo', pathname)

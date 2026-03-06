@@ -83,7 +83,7 @@ export async function POST(request: Request) {
     const variantIds = cartItems.map((i) => i.variantId)
     const { data: variants } = await supabase
       .from('product_variants')
-      .select('id, quantity, products(id, name, price, cost_price, product_images(cloudinary_url, is_primary))')
+      .select('id, quantity, products(id, name, price, cost_price, discount_percent, product_images(cloudinary_url, is_primary))')
       .in('id', variantIds)
 
     if (!variants || variants.length !== cartItems.length) {
@@ -114,6 +114,7 @@ export async function POST(request: Request) {
       const variant = variants.find((v) => v.id === cartItem.variantId)!
       const product = variant.products as {
         id: string; name: string; price: number; cost_price: number | null;
+        discount_percent: number | null;
         product_images: Array<{ cloudinary_url: string; is_primary: boolean }>
       } | null
 
@@ -121,7 +122,10 @@ export async function POST(request: Request) {
 
       const images   = product.product_images ?? []
       const imgUrl   = images.find((i) => i.is_primary)?.cloudinary_url ?? images[0]?.cloudinary_url ?? null
-      const lineTotal = product.price * cartItem.quantity
+      const unitPrice = product.discount_percent && product.discount_percent > 0
+        ? product.price * (1 - product.discount_percent / 100)
+        : product.price
+      const lineTotal = unitPrice * cartItem.quantity
       subtotal += lineTotal
 
       // Get the actual size from DB
@@ -135,7 +139,7 @@ export async function POST(request: Request) {
         product_image_url: imgUrl,
         size:              variantFull?.size ?? '',
         quantity:          cartItem.quantity,
-        unit_price:        product.price,
+        unit_price:        unitPrice,
         unit_cost:         product.cost_price,
         subtotal:          lineTotal,
       })

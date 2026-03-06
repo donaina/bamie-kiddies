@@ -17,22 +17,23 @@ const imageSchema = z.object({
   cloudinary_id:  z.string().min(1),
   is_primary:     z.boolean(),
   display_order:  z.number(),
-  alt_text:       z.string().optional(),
+  alt_text:       z.string().optional().nullable(),
 })
 
 const variantSchema = z.object({
-  id:       z.string().uuid().optional(),
+  id:       z.string().uuid().optional().nullable(),
   size:     z.string().min(1),
   quantity: z.number().min(0),
-  sku:      z.string().optional(),
+  sku:      z.string().optional().nullable(),
 })
 
 const productSchema = z.object({
   name:        z.string().min(2),
   slug:        z.string().min(2).regex(/^[a-z0-9-]+$/),
   description: z.string().optional(),
-  price:       z.number().min(0),
-  cost_price:  z.number().min(0).optional(),
+  price:            z.number().min(0),
+  cost_price:       z.number().min(0).optional(),
+  discount_percent: z.number().min(0).max(100).optional(),
   category:    z.string().optional(),
   gender:      z.enum(['boys','girls','unisex']).optional(),
   age_group:   z.string().optional(),
